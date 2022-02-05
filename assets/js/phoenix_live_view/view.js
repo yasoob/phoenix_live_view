@@ -880,8 +880,9 @@ export default class View {
 
   pushFormSubmit(formEl, targetCtx, phxEvent, opts, onReply){
     let filterIgnored = el => {
+      let formNotChangeTracked = el.form ? !el.form.hasAttribute(this.binding("change")) : false
       let userIgnored = closestPhxBinding(el, `${this.binding(PHX_UPDATE)}=ignore`, el.form)
-      return !(userIgnored || closestPhxBinding(el, "data-phx-update=ignore", el.form))
+      return !(formNotChangeTracked || userIgnored || closestPhxBinding(el, "data-phx-update=ignore", el.form))
     }
     let filterDisables = el => {
       return el.hasAttribute(this.binding(PHX_DISABLE_WITH))
