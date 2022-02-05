@@ -309,6 +309,8 @@ let DOM = {
     }
   },
 
+  isFormEntry(el){ return el.form && el.form instanceof HTMLFormElement },
+
   isFormInput(el){ return /^(?:input|select|textarea)$/i.test(el.tagName) && el.type !== "button" },
 
   syncAttrsToProps(el){

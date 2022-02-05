@@ -141,6 +141,7 @@ export default class DOMPatch {
           updates.push(el)
         },
         onBeforeElUpdated: (fromEl, toEl) => {
+          if(DOM.isFormEntry(fromEl) && !fromEl.form.hasAttribute(liveSocket.binding("change"))){ return false }
           DOM.cleanChildNodes(toEl, phxUpdate)
           if(this.skipCIDSibling(toEl)){ return false }
           if(DOM.isPhxSticky(fromEl)){ return false }
