@@ -19,6 +19,7 @@ defmodule Phoenix.LiveView.JS do
 
     * `add_class` - Add classes to elements, with optional transitions
     * `remove_class` - Remove classes from elements, with optional transitions
+    * `toggle_class` - Toggles classes on elements
     * `set_attribute` - Set an attribute on elements
     * `remove_attribute` - Remove an attribute from elements
     * `show` - Show elements, with optional transitions
@@ -488,6 +489,44 @@ defmodule Phoenix.LiveView.JS do
       names: class_names(names),
       transition: transition_class_names(opts[:transition]),
       time: time
+    })
+  end
+
+  @doc """
+  Toggles classes on elements.
+
+    * `names` - The string of classes to toggle.
+
+  ## Options
+
+    * `:to` - The optional DOM selector on which to toggle classes.
+      Defaults to the interacted element.
+
+  ## Examples
+
+      <div id="item">My Item</div>
+      <button phx-click={JS.toggle_class("highlight underline", to: "#item")}>
+        toggle highlight!
+      </button>
+  """
+  def toggle_class(names) when is_binary(names), do: toggle_class(%JS{}, names, [])
+
+  @doc "See `toggle_class/1`."
+  def toggle_class(%JS{} = js, names) when is_binary(names) do
+    toggle_class(js, names, [])
+  end
+
+  def toggle_class(names, opts) when is_binary(names) and is_list(opts) do
+    toggle_class(%JS{}, names, opts)
+  end
+
+  @doc "See `toggle_class/1`."
+  def toggle_class(%JS{} = js, names, opts) when is_binary(names) and is_list(opts) do
+    opts = validate_keys(opts, :toggle_class, [:to])
+
+    put_op(js, "toggle_class", %{
+      to: opts[:to],
+      names: class_names(names)
     })
   end
 

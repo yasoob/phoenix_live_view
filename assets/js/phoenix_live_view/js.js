@@ -89,6 +89,10 @@ let JS = {
     this.addOrRemoveClasses(el, [], names, transition, time, view)
   },
 
+  exec_toggle_class(eventType, phxEvent, view, sourceEl, el, {names}){
+    window.requestAnimationFrame(() => names.forEach(name => el.classList.toggle(name)))
+  },
+
   exec_transition(eventType, phxEvent, view, sourceEl, el, {time, transition}){
     let [transition_start, running, transition_end] = transition
     let onStart = () => this.addOrRemoveClasses(el, transition_start.concat(running), [])

@@ -260,6 +260,50 @@ defmodule Phoenix.LiveView.JSTest do
     end
   end
 
+  describe "toggle_class" do
+    test "with defaults" do
+      assert JS.toggle_class("show") == %JS{
+               ops: [["toggle_class", %{names: ["show"], to: nil}]]
+             }
+    end
+
+    test "selector" do
+      assert JS.toggle_class("show", to: "#modal") == %JS{
+               ops: [["toggle_class", %{names: ["show"], to: "#modal"}]]
+             }
+    end
+
+    test "multiple classes" do
+      assert JS.toggle_class("show hl") == %JS{
+               ops: [
+                 ["toggle_class", %{names: ["show", "hl"], to: nil}]
+               ]
+             }
+    end
+
+    test "composability" do
+      js = JS.toggle_class("show", to: "#modal") |> JS.toggle_class("hl")
+
+      assert js == %JS{
+               ops: [
+                 ["toggle_class", %{names: ["show"], to: "#modal"}],
+                 ["toggle_class", %{names: ["hl"], to: nil}]
+               ]
+             }
+    end
+
+    test "raises with unknown options" do
+      assert_raise ArgumentError, ~r/invalid option for toggle_class/, fn ->
+        JS.toggle_class("show", time: 100)
+      end
+    end
+
+    test "encoding" do
+      assert js_to_string(JS.toggle_class("show")) ==
+               "[[&quot;toggle_class&quot;,{&quot;names&quot;:[&quot;show&quot;],&quot;to&quot;:null}]]"
+    end
+  end
+
   describe "dispatch" do
     test "with defaults" do
       assert JS.dispatch("click", to: "#modal") == %JS{
