@@ -250,6 +250,10 @@ export default class View {
   }
 
   onJoin(resp){
+    if (resp.render_and_halt) {
+      resp = resp.render_and_halt;
+      this.liveSocket.disconnect();
+    }
     let {rendered, container} = resp
     if(container){
       let [tag, attrs] = container
@@ -604,6 +608,11 @@ export default class View {
     this.onChannel("redirect", ({to, flash}) => this.onRedirect({to, flash}))
     this.onChannel("live_patch", (redir) => this.onLivePatch(redir))
     this.onChannel("live_redirect", (redir) => this.onLiveRedirect(redir))
+    this.onChannel("dead_render", (rawDiff) => {
+      this.liveSocket.requestDOMUpdate(() => {
+        this.applyDiff("update", rawDiff, ({diff, events}) => this.update(diff, events))
+      })
+    })
     this.channel.onError(reason => this.onError(reason))
     this.channel.onClose(reason => this.onClose(reason))
   }
@@ -690,6 +699,9 @@ export default class View {
   }
 
   onError(reason){
+    if (this.halt) {
+      return;
+    }
     this.onClose(reason)
     if(this.liveSocket.isConnected()){ this.log("error", () => ["view crashed", reason]) }
     if(!this.liveSocket.isUnloaded()){
